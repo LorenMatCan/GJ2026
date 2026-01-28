@@ -382,13 +382,13 @@ GameObject:
   - component: {fileID: 1180497765140955407}
   - component: {fileID: 1180497765140955400}
   - component: {fileID: 1180497765140955401}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: State1Mask
-  m_TagString: Untagged
+  m_TagString: Luz
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1180497765140955407
 Transform:
   m_ObjectHideFlags: 0
@@ -466,6 +466,6 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.8, y: 0}
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 0.6
