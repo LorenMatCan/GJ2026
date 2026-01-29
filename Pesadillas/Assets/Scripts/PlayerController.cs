@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     private bool puedeSerControlado = true;
     [SerializeField]private Vector2 velocidadFlinch;
     [SerializeField]  private float tiempoFlinch;
+    //Variable publica para la invisibilidad 
+    public bool invisible; 
 
     void Awake()
     {
@@ -217,6 +219,7 @@ public class PlayerController : MonoBehaviour
     private void efectosInvisibilidad()
     {
         //Se almacenan para, una vez terminado se puedan volver a usar
+        invisible = true; 
         tempVelocidad = velocidad;
         tempPoderSalto = poderSalto;
         velocidad = velocidad / 2;
@@ -231,6 +234,7 @@ public class PlayerController : MonoBehaviour
         velocidad = tempVelocidad;
         poderSalto = tempPoderSalto;
         estadoMascara = true;
+        invisible = false; 
         state = 0;
         ActivarEstado();
     }
@@ -269,13 +273,15 @@ public class PlayerController : MonoBehaviour
  
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Permite moverse con la plataforma
-        if (collision.gameObject.tag == "PlataformaMovil")
-        {
-            transform.parent = collision.transform;
-        }
+        
         //Se hace el daño siempre y cuando no este usando uno de las mascaras
-        if (collision.gameObject.tag == "Enemigo" && !estadoMascara)
+        if (collision.gameObject.tag == "Enemigo" && !invisible)
+        {
+
+            PerderVida(1, collision.GetContact(0).normal);
+
+        }
+         if (collision.gameObject.tag == "Picos" )
         {
 
             PerderVida(1, collision.GetContact(0).normal);
@@ -283,13 +289,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OncollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "PlataformaMovil")
-        {
-            transform.parent = null;
-        }
-    }
     #endregion
 
     #region  Todo lo relacionado a la vida
