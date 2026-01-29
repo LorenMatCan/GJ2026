@@ -4,6 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - PlataformaMovil
+  - Jugador
+  - PlataformaSubeBaja
+  - Pivote
+  - PlataformaColumpio
+  - Picos
+  - PlataformaPicos
   - Enemigo
   - Luz
   - Jugador
