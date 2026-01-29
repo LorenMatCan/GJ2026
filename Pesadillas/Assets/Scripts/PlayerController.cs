@@ -39,18 +39,21 @@ public class PlayerController : MonoBehaviour
     private float tempVelocidad, tempPoderSalto;
     //Necesario para la vida 
     [SerializeField] private int vida;
+    //Relacionaddo con el "flinch" del personaje 
+    private bool puedeSerControlado = true;
+    [SerializeField]private Vector2 velocidadFlinch;
+    [SerializeField]  private float tiempoFlinch;
 
     void Awake()
     {
         tempPoderSalto = poderSalto;
-        tempVelocidad = velocidad;     
+        tempVelocidad = velocidad;
     }
 
     void Update()
     {
         //Movimiento básico de izquierda a derecha 
         xInput = Input.GetAxis("Horizontal");
-        rb.velocity = new Vector2(xInput * velocidad, rb.velocity.y);
 
         //Solo aceleramos cuando recibamos un input por partr del usuario
         if (xInput > 0.0f)
@@ -107,7 +110,34 @@ public class PlayerController : MonoBehaviour
             mascaraInvisible();
         }
     }
+    #region Movimiento en general 
+    void FixedUpdate()
+    {
+        if (puedeSerControlado)
+        {
+            rb.velocity = new Vector2(xInput * velocidad, rb.velocity.y);
+        }
 
+    }
+    
+    /// <summary>
+    /// Hace que el jugador reaccione a los ataques/golpes
+    /// </summary> 
+    /// 
+    private void Flinch(Vector2 colision)
+    {
+        if (colision.y == 1)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            rb.velocity = new Vector2(velocidadFlinch.x * colision.x, velocidadFlinch.y);
+        }
+
+    }
+
+    #endregion
 
     /// <summary>
     /// Crea una esfera en la parte inferior del personaje.Nos permite saber si estamos en el aire o en una plataforma
@@ -134,6 +164,9 @@ public class PlayerController : MonoBehaviour
 
     #region Máscaras/Habilidades.
 
+    /// <summary>
+    /// Modifica el sprite acorde a que estado se este usando actualmente
+    /// </summary> 
     private void ActivarEstado()
     {
         for (int i = 0; i < Fases.Length; i++)
@@ -149,6 +182,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Aplica lo realcionado a la luz Se apoya de una biblioteca externa
+    /// </summary> 
     private void mascaraLuz()
     {
         if (estadoLuz && estadoMascara)
@@ -160,6 +196,9 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(UsarLuz());
         }
     }
+    /// <summary>
+    /// Cambia a otro spirte y alentiza el movimiento
+    /// </summary> 
     private void mascaraInvisible()
     {
         if (estadoInvisible && estadoMascara)
@@ -172,14 +211,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Alenta los movimientos del jugador
+    /// </summary>
     private void efectosInvisibilidad()
     {
+        //Se almacenan para, una vez terminado se puedan volver a usar
         tempVelocidad = velocidad;
         tempPoderSalto = poderSalto;
         velocidad = velocidad / 2;
         poderSalto = poderSalto / 2;
     }
 
+    /// <summary>
+    /// Deshace los efectos de las dos máscaras anteriores
+    /// </summary> 
     private void regresarAFaseNormal()
     {
         velocidad = tempVelocidad;
@@ -190,7 +236,9 @@ public class PlayerController : MonoBehaviour
     }
 
 
-
+    /// <summary>
+    /// Activa la habilidad y el cronometro de su uso. Igualmetne cuenta hasta que esta se pueda vlver a usar
+    /// </summary> 
     private IEnumerator UsarLuz()
     {
         MensajeLuz.text = "Se esta usando luz";
@@ -217,18 +265,20 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Interacción con el mundo 
+
+ 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-
+        //Permite moverse con la plataforma
         if (collision.gameObject.tag == "PlataformaMovil")
         {
             transform.parent = collision.transform;
         }
-
-        if (collision.gameObject.tag == "Enemigo")
+        //Se hace el daño siempre y cuando no este usando uno de las mascaras
+        if (collision.gameObject.tag == "Enemigo" && !estadoMascara)
         {
-            PerderVida(1);
-            rb.AddForce(rb.velocity * 0.5f, ForceMode2D.Impulse);
+
+            PerderVida(1, collision.GetContact(0).normal);
 
         }
     }
@@ -244,12 +294,18 @@ public class PlayerController : MonoBehaviour
 
     #region  Todo lo relacionado a la vida
 
-    private void PerderVida(int dano)
+    /// <summary>
+    /// Disminuye la vida del jugador 
+    /// </summary> 
+    private void PerderVida(int dano, Vector2 posicion)
     {
         if (vida > 0)
         {
-            vida = vida - dano;
-            mensajeVida.text = vida.ToString() ;         
+            vida -= dano;
+            //Para que funcione bien el jugador debe de dejar de aplicar fuerza al objeto
+            StartCoroutine(PierdeControl());
+            Flinch(posicion);
+            mensajeVida.text = vida.ToString();
         }
         else
         {
@@ -257,12 +313,29 @@ public class PlayerController : MonoBehaviour
         }
 
     }
+    
+    /// <summary>
+    /// Alza y baja la bandera respectivamente cuando el jugador pierde el control 
+    /// y cuando lo recupera
+    /// </summary> 
+    private IEnumerator PierdeControl()
+    {
+        puedeSerControlado = false;
+        yield return new WaitForSeconds(tiempoFlinch);
+        puedeSerControlado = true;
+    }
+
+    /// <summary>
+    /// Termina el juego 
+    /// </summary> 
     private void Morir()
     {
         mensajeVida.text = "Ha muerto";
-        Destroy(gameObject); 
-           
-     }
+        Destroy(gameObject);
+
+    }
+     
+    
     #endregion
 
 }
