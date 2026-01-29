@@ -11,6 +11,9 @@ TagManager:
   - PlataformaColumpio
   - Picos
   - PlataformaPicos
+  - Enemigo
+  - Luz
+  - Jugador
   layers:
   - Default
   - TransparentFX
@@ -47,4 +50,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Platforms
+    uniqueID: 2197996537
+    locked: 0
+  - name: Player
+    uniqueID: 2804561617
     locked: 0
