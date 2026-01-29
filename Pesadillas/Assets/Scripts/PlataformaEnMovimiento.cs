@@ -33,4 +33,22 @@ public class PlataformaEnMovimiento : MonoBehaviour
         }
         
     }
+
+    // IMPORTANTE: Para que el personaje no se resbale 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("hola"); 
+        if (collision.gameObject.CompareTag("Jugador")) // O "Player"
+        {
+            collision.transform.SetParent(transform);
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Jugador"))
+        {
+            collision.transform.SetParent(null);
+        }
+    }
 }
