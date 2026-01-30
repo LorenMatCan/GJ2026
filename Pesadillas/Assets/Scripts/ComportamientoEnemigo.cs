@@ -17,13 +17,19 @@ public class ComportamientoEnemigo : MonoBehaviour
     public Sprite spriteEnemigo;
 
     public float velocidadHuida = 1f;
-    private bool huyendo = false;
+    //private bool huyendo = false;
 
     private BoxCollider2D boxCollider;
     public Transform player;
     private Rigidbody2D playerRb;
     private bool enemigoIluminado = false;
     public GameObject rangoVision;
+
+
+    public float tiempoInmunidad = 2f;
+    private Coroutine inmunidadCoroutine;
+
+    private bool persiguiendo = false;
 
 
     void Start()
@@ -36,14 +42,23 @@ public class ComportamientoEnemigo : MonoBehaviour
     void Update()
     {
         if (enemigoIluminado)
+        {
             Huir();
+        }
+        else if (persiguiendo)
+        {
+            PerseguirJugador();
+        }
         else
+        {
             Patrullaje();
+        }
     }
 
     void Patrullaje()
     {
         ///PATRULLAJE
+        spriteRenderer.sprite = spriteEnemigo;
         // Dirección según hacia dónde mira
         Vector2 direction = isFacingRight ? Vector2.right : Vector2.left;
         transform.Translate(direction * speed * Time.deltaTime);
@@ -75,17 +90,41 @@ public class ComportamientoEnemigo : MonoBehaviour
 
     //COMPORTAMIENTO CUANDO RECIBE LA LUZ
     private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Luz"))
-        {
-            spriteRenderer.sprite = spriteEnemigoIluminado;
-            enemigoIluminado = true;
-            huyendo = true;
-            boxCollider.isTrigger = true;
-            rangoVision.gameObject.SetActive(false);
-        }
+    {   
+            if (other.CompareTag("Luz"))
+            {
+                if (inmunidadCoroutine != null)
+                    StopCoroutine(inmunidadCoroutine);
+
+                inmunidadCoroutine = StartCoroutine(InmunidadTemporal());
+            }
+        
+
     }
 
+    IEnumerator InmunidadTemporal()
+    {
+        // Estado iluminado
+        enemigoIluminado = true;
+       // huyendo = true;
+
+        spriteRenderer.sprite = spriteEnemigoIluminado;
+        boxCollider.isTrigger = true;
+        rangoVision.SetActive(false);
+
+        // Espera X segundos
+        yield return new WaitForSeconds(tiempoInmunidad);
+
+        // Volver a estado normal
+        enemigoIluminado = false;
+       // huyendo = false;
+
+        spriteRenderer.sprite = spriteEnemigo;
+        boxCollider.isTrigger = false;
+        rangoVision.SetActive(true);
+    }
+    /*
+    
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("Luz"))
@@ -96,8 +135,7 @@ public class ComportamientoEnemigo : MonoBehaviour
             rangoVision.gameObject.SetActive(true);
         }
 
-    }
-
+    }*/
     void Huir()
     {
         // Dirección contraria al jugador (posición, no velocidad)
@@ -123,6 +161,32 @@ public class ComportamientoEnemigo : MonoBehaviour
         if (fleeDir < 0 && isFacingRight) Flip();
     }
 
+    void PerseguirJugador()
+    {
+        float dir = player.position.x - transform.position.x;
+        int moveDir = dir > 0 ? 1 : -1;
 
+        // Chequeo de suelo
+        RaycastHit2D ray = Physics2D.Raycast(
+            groundChecker.position,
+            Vector2.down,
+            checkDistance,
+            groundLayer
+        );
+
+        if (!ray.collider)
+            return;
+
+        transform.Translate(Vector2.right * moveDir * speed * Time.deltaTime);
+
+        // Girar sprite
+        if (moveDir > 0 && !isFacingRight) Flip();
+        if (moveDir < 0 && isFacingRight) Flip();
+    }
+
+    public void SetPersiguiendo(bool valor)
+    {
+        persiguiendo = valor;
+    }
 
 }
