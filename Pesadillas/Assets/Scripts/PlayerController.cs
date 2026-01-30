@@ -44,7 +44,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField]private Vector2 velocidadFlinch;
     [SerializeField]  private float tiempoFlinch;
     //Variable publica para la invisibilidad 
-    public bool invisible; 
+    public bool invisible;
+    public event System.Action Caminar; 
+    public event System.Action Parar; 
 
     void Awake()
     {
@@ -56,6 +58,14 @@ public class PlayerController : MonoBehaviour
     {
         //Movimiento básico de izquierda a derecha 
         xInput = Input.GetAxis("Horizontal");
+        if(EstaEnElSuelo()&& xInput !=0)
+        {
+            Caminar.Invoke();  
+        }
+        else
+        {
+            Parar.Invoke(); 
+        }
 
         //Solo aceleramos cuando recibamos un input por partr del usuario
         if (xInput > 0.0f)
@@ -336,6 +346,7 @@ public class PlayerController : MonoBehaviour
      
     
     #endregion
+
 
 }
 
