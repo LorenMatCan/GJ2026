@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float recargaLuz;
     [SerializeField] private float duracionInvisible;
     [SerializeField] private float recargaInvisible;
-    private bool estadoLuz = true, estadoInvisible = true, estadoMascara = true;
+    private bool estadoLuz = false, estadoInvisible = false, estadoMascara = true;
     public Text MensajeLuz, MensajeInvisible, mensajeVida;
     private float tempVelocidad, tempPoderSalto;
     //Necesario para la vida 
@@ -45,6 +45,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]  private float tiempoFlinch;
     //Variable publica para la invisibilidad 
     public bool invisible;
+    public event System.Action Caminar; 
+    public event System.Action Parar; 
+    public AudioClip[] musica;
+
 
 
     //COSAS AGREGADAS POR ALAN
@@ -56,12 +60,22 @@ public class PlayerController : MonoBehaviour
     {
         tempPoderSalto = poderSalto;
         tempVelocidad = velocidad;
+        MensajeLuz.text = "";
+        MensajeInvisible.text = ""; 
     }
 
     void Update()
     {
         //Movimiento básico de izquierda a derecha 
         xInput = Input.GetAxis("Horizontal");
+          if(EstaEnElSuelo()&& xInput !=0)
+        {
+            Caminar.Invoke();  
+        }
+        else
+        {
+            Parar.Invoke(); 
+        }
 
         //Solo aceleramos cuando recibamos un input por partr del usuario
         if (xInput > 0.0f)
@@ -74,6 +88,7 @@ public class PlayerController : MonoBehaviour
             contadorBufferSalto = bufferSaltoTiempo;
             if (dobleSalto | EstaEnElSuelo() || (contadorTiempoCoyote > 0f && contadorBufferSalto > 0f))
             {
+                SFX.SFXMenu.SuenaFXClip(musica[5], rb.transform); 
                 rb.velocity = new Vector2(rb.velocity.x, poderSalto);
                 dobleSalto = !dobleSalto;
                 contadorBufferSalto = 0f;
@@ -197,6 +212,7 @@ public class PlayerController : MonoBehaviour
     {
         if (estadoLuz && estadoMascara)
         {
+            SFX.SFXMenu.SuenaFXClip(musica[3], rb.transform); 
             estadoMascara = false;
             estadoLuz = false;
             state = 1;
@@ -211,6 +227,7 @@ public class PlayerController : MonoBehaviour
     {
         if (estadoInvisible && estadoMascara)
         {
+            SFX.SFXMenu.SuenaFXClip(musica[2], rb.transform); 
             estadoMascara = false;
             estadoInvisible = false;
             state = 2;
@@ -294,6 +311,22 @@ public class PlayerController : MonoBehaviour
             PerderVida(1, collision.GetContact(0).normal);
 
         }
+        if (collision.gameObject.tag == "MLuz")
+        {
+            SFX.SFXMenu.SuenaFXClip(musica[1], rb.transform);
+            estadoLuz = true;
+            MensajeLuz.text = "Luz";
+            Destroy(collision.gameObject);  
+
+        }
+        if (collision.gameObject.tag == "MInvi")
+        {
+            SFX.SFXMenu.SuenaFXClip(musica[1], rb.transform);
+            estadoInvisible = true;
+            MensajeInvisible.text = "Invisible"; 
+            Destroy(collision.gameObject);
+
+        }
 
     }
 
@@ -308,6 +341,7 @@ public class PlayerController : MonoBehaviour
     {
         if (vida > 0)
         {
+            SFX.SFXMenu.SuenaFXClip(musica[0], rb.transform); 
             vida -= dano;
             //Para que funcione bien el jugador debe de dejar de aplicar fuerza al objeto
             StartCoroutine(PierdeControl());
@@ -337,6 +371,7 @@ public class PlayerController : MonoBehaviour
     /// </summary> 
     private void Morir()
     {
+        SFX.SFXMenu.SuenaFXClip(musica[4], rb.transform); 
         mensajeVida.text = "Ha muerto";
         //Destroy(gameObject);
 
@@ -358,6 +393,7 @@ public class PlayerController : MonoBehaviour
     {
         if (vida > 0)
         {
+            SFX.SFXMenu.SuenaFXClip(musica[0], rb.transform); 
             vida -= dano;
            // vida = vida + 1;
             //Para que funcione bien el jugador debe de dejar de aplicar fuerza al objeto
