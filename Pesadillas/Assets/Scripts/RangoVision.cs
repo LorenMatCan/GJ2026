@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PerseguirJugador : MonoBehaviour
+public class RangoVision : MonoBehaviour
 {
     public ComportamientoEnemigo enemigo;
 
@@ -8,7 +8,7 @@ public class PerseguirJugador : MonoBehaviour
     {
         if (other.CompareTag("Jugador"))
         {
-           // enemigo.persiguiendoJugador = true;
+            enemigo.SetPersiguiendo(true);
         }
     }
 
@@ -16,7 +16,7 @@ public class PerseguirJugador : MonoBehaviour
     {
         if (other.CompareTag("Jugador"))
         {
-            //enemigo.persiguiendoJugador = false;
+            enemigo.SetPersiguiendo(false);
         }
     }
 }
