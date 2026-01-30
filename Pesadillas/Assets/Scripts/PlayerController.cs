@@ -38,14 +38,20 @@ public class PlayerController : MonoBehaviour
     public Text MensajeLuz, MensajeInvisible, mensajeVida;
     private float tempVelocidad, tempPoderSalto;
     //Necesario para la vida 
-    [SerializeField] private int vida;
+    [SerializeField] public int vida;
     //Relacionaddo con el "flinch" del personaje 
     private bool puedeSerControlado = true;
     [SerializeField]private Vector2 velocidadFlinch;
     [SerializeField]  private float tiempoFlinch;
     //Variable publica para la invisibilidad 
-    public bool invisible; 
+    public bool invisible;
 
+
+    //COSAS AGREGADAS POR ALAN
+    //Variable para indicar si se murio para manda la pantalla de game ovver
+    public bool seMurio = false;
+    //Variable para indicar si solo se cayo pero puede reaparecer
+    public bool seCayo = false;
     void Awake()
     {
         tempPoderSalto = poderSalto;
@@ -140,7 +146,7 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
-
+    
     /// <summary>
     /// Crea una esfera en la parte inferior del personaje.Nos permite saber si estamos en el aire o en una plataforma
     /// </summary>    
@@ -148,7 +154,7 @@ public class PlayerController : MonoBehaviour
     {
         return Physics2D.OverlapCircle(revisaHayPisoAbajo.position, 0.2f, suelo);
     }
-
+    
     /// <summary>
     /// Voltea el asset del personaje dependiendo de en que dirección esta viendo 
     /// </summary>  
@@ -270,10 +276,10 @@ public class PlayerController : MonoBehaviour
 
     #region Interacción con el mundo 
 
- 
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+
         //Se hace el daño siempre y cuando no este usando uno de las mascaras
         if (collision.gameObject.tag == "Enemigo" && !invisible)
         {
@@ -281,12 +287,14 @@ public class PlayerController : MonoBehaviour
             PerderVida(1, collision.GetContact(0).normal);
 
         }
-         if (collision.gameObject.tag == "Picos" )
+
+        if (collision.gameObject.tag == "Picos")
         {
 
             PerderVida(1, collision.GetContact(0).normal);
 
         }
+
     }
 
     #endregion
@@ -296,7 +304,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// Disminuye la vida del jugador 
     /// </summary> 
-    private void PerderVida(int dano, Vector2 posicion)
+    public void PerderVida(int dano, Vector2 posicion)
     {
         if (vida > 0)
         {
@@ -330,11 +338,40 @@ public class PlayerController : MonoBehaviour
     private void Morir()
     {
         mensajeVida.text = "Ha muerto";
-        Destroy(gameObject);
+        //Destroy(gameObject);
+
+        if (seMurio) return;
+        seMurio = true;
+        GameController.Instance.PlayerDied();
 
     }
-     
-    
+
+    //Usado en el checkpoint
+    public void ResetearVelocidad()
+    {
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.velocity = Vector2.zero;
+    }
+
+    //Este es solo para cuando pierda vida por caer en una plataforma que lo lleva a otro
+    public void PerderVidaRespawn(int dano)
+    {
+        if (vida > 0)
+        {
+            vida -= dano;
+           // vida = vida + 1;
+            //Para que funcione bien el jugador debe de dejar de aplicar fuerza al objeto
+          //  StartCoroutine(PierdeControl());
+            //Flinch(posicion);
+            mensajeVida.text = vida.ToString();
+        }
+        else
+        {
+            Morir();
+        }
+
+    }
+
     #endregion
 
 }
