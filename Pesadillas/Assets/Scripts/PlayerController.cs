@@ -151,7 +151,8 @@ public class PlayerController : MonoBehaviour
     {
         if (colision.y == 1)
         {
-            Destroy(gameObject);
+            // Destroy(gameObject);
+            //continue;
         }
         else
         {

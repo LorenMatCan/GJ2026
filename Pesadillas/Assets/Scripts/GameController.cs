@@ -14,11 +14,13 @@ public class GameController : MonoBehaviour
     private Vector2 checkpointPos;
     private PlayerController player;
 
+    
+
     void Awake()
     {
         Instance = this;
-        player = GameObject.FindGameObjectWithTag("Jugador")
-                           .GetComponent<PlayerController>();
+        BGM.BGMMenu.CambiarMusica(0);
+        player = GameObject.FindGameObjectWithTag("Jugador").GetComponent<PlayerController>();
     }
 
     void Start()
