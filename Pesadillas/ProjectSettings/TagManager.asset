@@ -29,10 +29,10 @@ TagManager:
   - Luz
   - 'Enemigo '
   - Invisible
-  - 
-  - 
-  - 
-  - 
+  - Background
+  - Player
+  - Platforms
+  - Plataforma
   - 
   - 
   - 
@@ -53,9 +53,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 613815043
+    locked: 0
+  - name: Ground
+    uniqueID: 184238005
+    locked: 0
   - name: Platforms
     uniqueID: 2197996537
     locked: 0
   - name: Player
     uniqueID: 2804561617
+    locked: 0
+  - name: Plataforma
+    uniqueID: 2111074339
     locked: 0

@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
     public GameObject gameOverUI;
 
     private Vector2 checkpointPos;
-    private PlayerController player;
+    public PlayerController player;
 
     
 
