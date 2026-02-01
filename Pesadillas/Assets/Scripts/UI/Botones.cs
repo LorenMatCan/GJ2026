@@ -14,6 +14,6 @@ public class Botones : MonoBehaviour
     
     public void CambiarEscena()
     {
-        SceneManager.LoadScene("´PrimerNivel");
+        SceneManager.LoadScene("PrimerNivel");
     }
 }
