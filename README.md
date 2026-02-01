@@ -1,4 +1,5 @@
-##Instrucciones
+# Alfa 
+## Instrucciones
 Para ejecutar el juego necesitarán una computadora con unity.
 Abra unityhub, dele click  a la sección de agregar nuevo proeyecto. 
 Selecióne el archillo "pesadillas".
