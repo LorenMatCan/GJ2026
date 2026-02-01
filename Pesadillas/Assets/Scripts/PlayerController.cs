@@ -35,7 +35,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float duracionInvisible;
     [SerializeField] private float recargaInvisible;
     private bool estadoLuz = false, estadoInvisible = false, estadoMascara = true;
-    public Text MensajeLuz, MensajeInvisible, mensajeVida;
+    public Text  mensajeVida;
+    public GameObject MensajeLuz, MensajeInvisible; 
     private float tempVelocidad, tempPoderSalto;
     //Necesario para la vida 
     [SerializeField] public int vida;
@@ -60,8 +61,6 @@ public class PlayerController : MonoBehaviour
     {
         tempPoderSalto = poderSalto;
         tempVelocidad = velocidad;
-        MensajeLuz.text = "";
-        MensajeInvisible.text = ""; 
     }
 
     void Update()
@@ -269,25 +268,25 @@ public class PlayerController : MonoBehaviour
     /// </summary> 
     private IEnumerator UsarLuz()
     {
-        MensajeLuz.text = "Se esta usando luz";
+        MensajeLuz.SetActive(true); 
         yield return new WaitForSeconds(duracionLuz);
         regresarAFaseNormal();
-        MensajeLuz.text = "Recargando";
+        MensajeLuz.SetActive(false); 
         yield return new WaitForSeconds(recargaLuz);
-        MensajeLuz.text = "Luz";
+        MensajeLuz.SetActive(true); 
         estadoLuz = true;
     }
 
     private IEnumerator UsarInvisible()
     {
-        MensajeInvisible.text = "Se esta usando Invisible";
+        MensajeInvisible.SetActive(true); 
         efectosInvisibilidad();
         yield return new WaitForSeconds(duracionInvisible);
         regresarAFaseNormal();
-        MensajeInvisible.text = "Recargando";
+        MensajeInvisible.SetActive(false);
         ActivarEstado();
         yield return new WaitForSeconds(recargaInvisible);
-        MensajeLuz.text = "Invisible";
+        MensajeInvisible.SetActive(true);
         estadoInvisible = true;
     }
     #endregion
@@ -316,7 +315,7 @@ public class PlayerController : MonoBehaviour
         {
             SFX.SFXMenu.SuenaFXClip(musica[1], rb.transform);
             estadoLuz = true;
-            MensajeLuz.text = "Luz";
+            MensajeLuz.SetActive(true);
             Destroy(collision.gameObject);  
 
         }
@@ -324,7 +323,7 @@ public class PlayerController : MonoBehaviour
         {
             SFX.SFXMenu.SuenaFXClip(musica[1], rb.transform);
             estadoInvisible = true;
-            MensajeInvisible.text = "Invisible"; 
+            MensajeInvisible.SetActive(true); 
             Destroy(collision.gameObject);
 
         }

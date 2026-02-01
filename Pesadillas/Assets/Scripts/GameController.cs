@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        BGM.BGMMenu.CambiarMusica(0);
+        BGM.BGMMenu.CambiarMusica(1);
         player = GameObject.FindGameObjectWithTag("Jugador").GetComponent<PlayerController>();
     }
 
@@ -54,8 +54,9 @@ public class GameController : MonoBehaviour
 
     public void PlayerDied()
     {
-        gameOverUI.SetActive(true);
         Time.timeScale = 0f;
+        gameOverUI.SetActive(true);
+        
     }
 }
 
